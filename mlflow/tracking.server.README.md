@@ -1,20 +1,20 @@
 -------------------------------------
 # download the project:
-wget https://github.com/shapeandshare/anaconda.enterprise.mlflow.tracking.server/archive/refs/tags/0.4.3.tar.gz --output-document=assets/anaconda.enterprise.mlflow.tracking.server.0.4.3.tar.gz
+wget https://github.com/shapeandshare/anaconda.enterprise.mlflow.tracking.server/archive/refs/tags/0.4.4.tar.gz --output-document=assets/anaconda.enterprise.mlflow.tracking.server.0.4.4.tar.gz
 
 # if splitstreaming is needed for specific builds:
 rm -rf ./tmp
 mkdir tmp
 cd tmp
-wget https://github.com/shapeandshare/anaconda.enterprise.mlflow.tracking.server/archive/refs/tags/0.4.3.tar.gz
-tar xfvz 0.4.3.tar.gz
-tar cfvz ../assets/anaconda.enterprise.mlflow.tracking.server.0.4.3.tar.gz anaconda.enterprise.mlflow.tracking.server-0.4.3/
+wget https://github.com/shapeandshare/anaconda.enterprise.mlflow.tracking.server/archive/refs/tags/0.4.4.tar.gz
+tar xfvz 0.4.4.tar.gz
+tar cfvz ../assets/anaconda.enterprise.mlflow.tracking.server.0.4.4.tar.gz anaconda.enterprise.mlflow.tracking.server-0.4.4/
 cd ..
 rm -rf ./tmp
 
 
 # to upload the project:
-ae5 project upload --name "dev.mlflow.tracking.server" assets/anaconda.enterprise.mlflow.tracking.server.0.4.3.tar.gz
+ae5 project upload --name "dev.mlflow.tracking.server" assets/anaconda.enterprise.mlflow.tracking.server.0.4.4.tar.gz
 
 # To create the deployment:
 ae5 project deploy --name "dev.mlflow.tracking.server" --endpoint "dev-mlflow-tracking-server" --command "TrackingServer" --private "dev.mlflow.tracking.server"
