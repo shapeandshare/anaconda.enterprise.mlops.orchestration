@@ -10,6 +10,7 @@ channels:
 packages:
   - python=3.10.8
   - mlflow=2.0.1
+  - ipykernel
   - python-dotenv
   - anaconda.enterprise.server.sdk>=0.4.1
   - anaconda.enterprise.server.contracts>=0.4.2
@@ -29,14 +30,24 @@ packages:
   - anaconda-project
 
 commands:
+  notebooks/delete_project.ipynb:
+    notebook: notebooks/delete_project.ipynb
+    env_spec: default
+  notebooks/deploy_endpoint.ipynb:
+    notebook: notebooks/deploy_endpoint.ipynb
+    env_spec: default
   notebooks/deploy_tracking_pruner.ipynb:
     notebook: notebooks/deploy_tracking_pruner.ipynb
     env_spec: default
   notebooks/deploy_tracking_server.ipynb:
     notebook: notebooks/deploy_tracking_server.ipynb
     env_spec: default
-  lint:fix:
-    unix: sacr run lint:fix
+  notebooks/prediction_endpoint.ipynb:
+    notebook: notebooks/prediction_endpoint.ipynb
+    env_spec: default
+  notebooks/prediction_local.ipynb:
+    notebook: notebooks/prediction_local.ipynb
+    env_spec: default
 
 platforms:
 - linux-64
