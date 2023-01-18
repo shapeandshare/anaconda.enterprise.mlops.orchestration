@@ -1,6 +1,22 @@
 name: anaconda.enterprise.mlops.orchestration
 description: Anaconda Enterprise MLOps Orchestration
 
+variables:
+    # Anaconda Enterprise Configuration
+    AE_HOSTNAME:
+    AE_USERNAME:
+    AE_PASSWORD:
+
+    # MLFlow Tracking Server Configuration
+    MLFLOW_BACKEND_STORE_URI: sqlite:///data/mlflow/standalone/store/mydb.sqlite
+    MLFLOW_ARTIFACTS_DESTINATION: data/mlflow/standalone/artifacts
+    MLFLOW_TRACKING_GC_TTL: 30d0h0m0s
+
+#    MLFLOW_TRACKING_URI:
+#    MLFLOW_REGISTRY_URI:
+#    MLFLOW_TRACKING_TOKEN:
+#    MLFLOW_TRACKING_ENTITY_TTL: 30
+
 channels:
   - conda-forge
   - joshburt
@@ -39,16 +55,6 @@ commands:
     unix: |
       isort .
       black --line-length=120 --target-version=py310 .
-
-  build:apidocs:
-    env_spec: default
-    unix: |
-      sphinx-apidoc -f -o docs/source/api src/anaconda/mlflow/tracking/sdk
-
-  build:docs:
-    env_spec: default
-    unix: |
-      cd docs && make clean && make html
 
 env_specs:
   default:
