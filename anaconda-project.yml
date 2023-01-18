@@ -71,7 +71,7 @@ env_specs:
       - sphinx=5.3.0
       - myst-parser=0.18.1
       - ae5-tools=0.4.1
-      - keyring
+      - keyring=23.13.1
       - anaconda.enterprise.server.sdk>=0.4.1
       - anaconda.enterprise.server.contracts>=0.4.2
       - anaconda.enterprise.server.common.sdk>=0.2
