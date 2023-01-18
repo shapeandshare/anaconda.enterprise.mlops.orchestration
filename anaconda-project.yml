@@ -1,53 +1,10 @@
 name: anaconda.enterprise.mlops.orchestration
-description: Anaconda Enterprise AE5 MLOps Orchestration
+description: Anaconda Enterprise MLOps Orchestration
 
 channels:
-  - defaults
   - conda-forge
   - joshburt
   - ae5-admin
-
-packages:
-  - python=3.10.8
-  - mlflow=2.0.1
-  - ipykernel
-  - python-dotenv
-  - anaconda.enterprise.server.sdk>=0.4.1
-  - anaconda.enterprise.server.contracts>=0.4.2
-  - anaconda.enterprise.server.common.sdk>=0.1
-  - anaconda.enterprise.mlflow.tracking.sdk>=0.7
-  - ae5-tools=0.4.1
-  - shapeandshare.command.runner
-  - black
-  - black-jupyter
-  - jupyter
-  - coverage
-  - isort
-  - pydantic
-  - pylint
-  - setuptools
-  - anaconda-client
-  - anaconda-project
-
-commands:
-  notebooks/delete_project.ipynb:
-    notebook: notebooks/delete_project.ipynb
-    env_spec: default
-  notebooks/deploy_endpoint.ipynb:
-    notebook: notebooks/deploy_endpoint.ipynb
-    env_spec: default
-  notebooks/deploy_tracking_pruner.ipynb:
-    notebook: notebooks/deploy_tracking_pruner.ipynb
-    env_spec: default
-  notebooks/deploy_tracking_server.ipynb:
-    notebook: notebooks/deploy_tracking_server.ipynb
-    env_spec: default
-  notebooks/prediction_endpoint.ipynb:
-    notebook: notebooks/prediction_endpoint.ipynb
-    env_spec: default
-  notebooks/prediction_local.ipynb:
-    notebook: notebooks/prediction_local.ipynb
-    env_spec: default
 
 platforms:
 - linux-64
@@ -55,10 +12,60 @@ platforms:
 - osx-arm64
 - win-64
 
+commands:
+  #
+  # Development Time Commands
+  #
+
+  bash:
+    env_spec: default
+    unix: bash
+
+  clean:
+    env_spec: default
+    unix: |
+      rm -rf .coverage htmlcov coverage.xml build docs/build
+      jupyter nbconvert --clear-output --inplace notebooks/*.ipynb
+
+  lint:
+    env_spec: default
+    unix: |
+      pylint src
+      isort --check --diff .
+      black --line-length=120 --target-version=py310 --check --diff .
+
+  lint:fix:
+    env_spec: default
+    unix: |
+      isort .
+      black --line-length=120 --target-version=py310 .
+
+  build:apidocs:
+    env_spec: default
+    unix: |
+      sphinx-apidoc -f -o docs/source/api src/anaconda/mlflow/tracking/sdk
+
+  build:docs:
+    env_spec: default
+    unix: |
+      cd docs && make clean && make html
+
 env_specs:
   default:
-    description: Default environment spec for running commands
+    description: Default Environment
     packages:
-    - notebook
-    channels: []
-    platforms: []
+      - python=3.10.8
+      - mlflow=2.0.1
+      - ipykernel=6.20.2
+      - isort=5.9.3
+      - black=22.10.0
+      - black-jupyter=22.10.0
+      - pylint=2.14.5
+      - pyyaml=6.0
+      - sphinx=5.3.0
+      - myst-parser=0.18.1
+      - ae5-tools=0.4.1
+      - anaconda.enterprise.server.sdk>=0.4.1
+      - anaconda.enterprise.server.contracts>=0.4.2
+      - anaconda.enterprise.server.common.sdk>=0.2
+      - anaconda.mlflow.tracking.sdk>=0.9.3
