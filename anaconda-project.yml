@@ -13,7 +13,7 @@ variables:
     MLFLOW_TRACKING_GC_TTL: 30d0h0m0s
 
     # MLFlow Tracking Server Resource Pruning Service
-    MLFLOW_TRACKING_ENTITY_TTL: 30
+    MLFLOW_TRACKING_ENTITY_TTL: "30"
 # If NOT deployed into the same account as the server then the following secrets MUST also be defined:
 #    MLFLOW_TRACKING_URI:
 #    MLFLOW_REGISTRY_URI:
