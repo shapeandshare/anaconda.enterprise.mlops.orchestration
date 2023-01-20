@@ -45,7 +45,10 @@ logs/
 
 venv/
 .vs/
-dist/
 .coverage
+coverage.xml
+dist/
 envs/
-
+anaconda-project-local.yml
+build/
+.ipynb_checkpoints
