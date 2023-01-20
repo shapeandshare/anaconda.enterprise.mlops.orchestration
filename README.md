@@ -1,30 +1,47 @@
 #  Anaconda Enterprise MLOps Orchestration Toolbox
 
-Overview
---------
-The toolbox exists to solve several goals:
+## Overview
 
-1. Provides a standard platform for deploying an MLFlow Tracking Server into Anaconda Enterprise hosted environment.
-2. Provide guidance and examples for leveraging MLFlow and Anaconda Enterprise.
+The toolbox provides a set of notebooks useful for MLFlow and MLOps related tasks within Anaconda Enterprise.
 
-This solution is an Anaconda Project, and as such the configuration is controlled with `anaconda-project.yml`.
-The configuration file has been pre-populated with the defaults but a `prepare` can be used to create the configuration and runtime environment suiteable for deployment.
+## Project Structure
 
-Notebooks
---------
-* `notebooks` contains the notebook installations and examples.
+```
+root
+│
+└───notebooks
+│   │
+│   └───deployment
+│   │       tracking_server.ipynb
+│   │       tracking_server_prune.ipynb
+│   │       
+│   └───endpoint
+│           deploy_endpoint.ipynb
+│           prediction_endpoint.ipynb       
+```
 
-Requirements
---------
+## Notebooks
+
+### Deployment Notebooks
+
+* [MLFlow Tracking Server Installation](notebooks/deployment/tracking_server.ipynb)
+* [MLFlow Tracking Server Pruning Service Installation](notebooks/deployment/tracking_server_prune.ipynb)
+
+### Model Endpoint Notebooks
+* [MLFlow Model Serving Endpoint Deployment](notebooks/endpoint/endpoint_deploy.ipynb)
+* [MLFlow Model Serving Endpoint Consumer](notebooks/endpoint/endpoint_prediction.ipynb)
+
+## Requirements
+
 * conda
 * anaconda-project
 
-Environment Setup
---------
+## Environment Setup
+
 > anaconda-project prepare
 
-Anaconda Project Commands
---------
+## Anaconda Project Commands
+
 These commands are used during develop for solution management.
 
 | Command          | Environment  | Description                                               |
@@ -34,8 +51,8 @@ These commands are used during develop for solution management.
 | lint             | Development  | Perform code linting check                                |
 | lint:fix         | Development  | Perform automated code formatting                         |
 
-Contributing
-------------
+## Contributing
+
 1. Fork the repository on GitHub
 2. Create a named feature branch (like `add_component_x`)
 3. Write your change
@@ -43,8 +60,8 @@ Contributing
 5. Run the tests, ensuring they all pass
 6. Submit a Pull Request using GitHub
 
-License and Authors
--------------------
+## License and Authors
+
 Copyright (c) 2023 Joshua Burt
 All rights reserved.
 
