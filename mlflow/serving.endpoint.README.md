@@ -1,5 +1,5 @@
 # download the project:
-wget https://github.com/shapeandshare/anaconda.enterprise.mlflow.model.serving.endpoint/archive/refs/tags/0.3.1.tar.gz --output-document=assets/anaconda.enterprise.mlflow.model.serving.endpoint.0.3.1.tar.gz
+wget https://github.com/shapeandshare/mlflow.model.serving/archive/refs/tags/0.4.0.tar.gz --output-document=assets/mlflow.model.serving.0.4.0.tar.gz
 
 # if splitstreaming is needed for specific builds:
 rm -rf ./tmp

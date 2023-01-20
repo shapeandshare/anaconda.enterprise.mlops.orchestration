@@ -1,6 +1,6 @@
 -------------------------------------
 # download the project:
-wget https://github.com/shapeandshare/anaconda.enterprise.mlflow.tracking.workflow.pruner/archive/refs/tags/0.6.0.tar.gz --output-document=assets/mlflow.tracking.pruner.0.6.0.tar.gz
+wget https://github.com/shapeandshare/anaconda.mlflow.tracking.prune/archive/refs/tags/0.6.7.tar.gz --output-document=assets/mlflow.tracking.prune-0.6.7.tar.gz
 
 
 # build the project:
