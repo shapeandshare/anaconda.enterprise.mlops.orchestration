@@ -21,7 +21,6 @@ variables:
 #    MLFLOW_TRACKING_TOKEN:
 
 channels:
-  - default
   - https://conda.anaconda.org/conda-forge/
   - https://conda.anaconda.org/joshburt/
   - https://conda.anaconda.org/ae5-admin/
