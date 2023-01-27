@@ -67,6 +67,7 @@ env_specs:
     - python=3.10
     - mlflow=2.0.1
     - ipykernel
+    - jupyter
     - isort
     - black
     - black-jupyter
