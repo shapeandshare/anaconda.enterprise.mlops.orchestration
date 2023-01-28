@@ -34,6 +34,7 @@ root
 ## Requirements
 
 * conda
+* keyring
 * anaconda-project
 
 ## Environment Setup
