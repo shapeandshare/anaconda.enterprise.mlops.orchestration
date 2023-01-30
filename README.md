@@ -1,5 +1,13 @@
 #  Anaconda Enterprise MLOps Toolbox
 
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=shapeandshare_anaconda.enterprise.mlops.toolbox&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=shapeandshare_anaconda.enterprise.mlops.toolbox)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=shapeandshare_anaconda.enterprise.mlops.toolbox&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=shapeandshare_anaconda.enterprise.mlops.toolbox)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=shapeandshare_anaconda.enterprise.mlops.toolbox&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=shapeandshare_anaconda.enterprise.mlops.toolbox)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=shapeandshare_anaconda.enterprise.mlops.toolbox&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=shapeandshare_anaconda.enterprise.mlops.toolbox)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=shapeandshare_anaconda.enterprise.mlops.toolbox&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=shapeandshare_anaconda.enterprise.mlops.toolbox)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=shapeandshare_anaconda.enterprise.mlops.toolbox&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=shapeandshare_anaconda.enterprise.mlops.toolbox)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=shapeandshare_anaconda.enterprise.mlops.toolbox&metric=bugs)](https://sonarcloud.io/summary/new_code?id=shapeandshare_anaconda.enterprise.mlops.toolbox)
+
 ## Overview
 
 The toolbox provides a set of notebooks useful for MLFlow and MLOps related tasks within Anaconda Enterprise.
