@@ -1,4 +1,4 @@
-#  Anaconda Enterprise MLOps Orchestration Toolbox
+#  Anaconda Enterprise MLOps Toolbox
 
 ## Overview
 
@@ -11,25 +11,27 @@ root
 │
 └───notebooks
 │   │
-│   └───deployment
+│   └───infrastructure
 │   │       tracking_server.ipynb
 │   │       tracking_server_prune.ipynb
 │   │       
 │   └───endpoint
 │           deploy_endpoint.ipynb
-│           prediction_endpoint.ipynb       
+│           prediction_endpoint_taxi.ipynb       
+│           prediction_endpoint_wine.ipynb       
 ```
 
 ## Notebooks
 
-### Deployment Notebooks
+### Infrastructure Notebooks
 
-* [MLFlow Tracking Server Installation](notebooks/deployment/tracking_server.ipynb)
-* [MLFlow Tracking Server Pruning Service Installation](notebooks/deployment/tracking_server_prune.ipynb)
+* [MLFlow Tracking Server Installation](notebooks/infrastructure/tracking_server.ipynb)
+* [MLFlow Tracking Server Pruning Service Installation](notebooks/infrastructure/tracking_server_prune.ipynb)
 
 ### Model Endpoint Notebooks
 * [MLFlow Model Serving Endpoint Deployment](notebooks/endpoint/endpoint_deploy.ipynb)
-* [MLFlow Model Serving Endpoint Consumer](notebooks/endpoint/endpoint_prediction.ipynb)
+* [MLFlow Model Serving Endpoint (Taxi Recipe) Example](notebooks/endpoint/endpoint_prediction_taxi.ipynb)
+* [MLFlow Model Serving Endpoint (Wine Quality Multistep Workflow) Example](notebooks/endpoint/endpoint_prediction_wine.ipynb)
 
 ## Requirements
 
@@ -37,11 +39,15 @@ root
 * keyring
 * anaconda-project
 
-## Environment Setup
+## Runtime Environment Setup
 
 > anaconda-project prepare
 
-## Anaconda Project Commands
+## Development Environment Setup
+
+> anaconda-project prepare --env-spec development
+
+## Anaconda Project Development Commands
 
 These commands are used during develop for solution management.
 

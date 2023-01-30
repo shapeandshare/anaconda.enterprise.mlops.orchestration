@@ -1,5 +1,5 @@
-name: anaconda-enterprise-mlops-orchestration
-description: Anaconda Enterprise MLOps Orchestration
+name: anaconda-enterprise-mlops-toolbox
+description: Anaconda Enterprise MLOps Toolbox
 
 variables:
   # Anaconda Enterprise Configuration
@@ -38,24 +38,24 @@ commands:
   #
 
   bash:
-    env_spec: default
+    env_spec: development
     unix: bash
 
   clean:
-    env_spec: default
+    env_spec: development
     unix: |
       rm -rf .coverage htmlcov coverage.xml build docs/build
       jupyter nbconvert --clear-output --inplace notebooks/**/*.ipynb
 
   lint:
-    env_spec: default
+    env_spec: development
     unix: |
       pylint src
       isort --check --diff .
       black --line-length=120 --target-version=py310 --check --diff .
 
   lint:fix:
-    env_spec: default
+    env_spec: development
     unix: |
       isort .
       black --line-length=120 --target-version=py310 .
@@ -64,33 +64,46 @@ env_specs:
   default:
     description: Default Environment
     packages:
-    - python=3.10
-    - mlflow=2.0.1
-    - ipykernel
-    - jupyter
-    - isort
-    - black
-    - black-jupyter
-    - pylint
-    - pyyaml
-    - sphinx
-    - myst-parser
-    - ae5-tools
-    - keyring
-    - anaconda.enterprise.server.sdk>=0.6.0
-    - anaconda.enterprise.server.contracts>=0.8.2
-    - anaconda.enterprise.server.common.sdk>=0.4.7
-    - anaconda.mlflow.tracking.sdk>=0.10.2
+      - python=3.10
+      - mlflow=2.0.1
+      - ipykernel
+      - ae5-tools
+      - keyring
+      - anaconda.enterprise.server.sdk>=0.6.0
+      - anaconda.enterprise.server.contracts>=0.8.3
+      - anaconda.enterprise.server.common.sdk>=0.4.8
+      - anaconda.mlflow.tracking.sdk>=0.10.3
+
+  development:
+    description: Default Environment
+    packages:
+      - python=3.10
+      - mlflow=2.0.1
+      - ipykernel
+      - jupyter
+      - isort
+      - black
+      - black-jupyter
+      - pylint
+      - pyyaml
+      - sphinx
+      - myst-parser
+      - ae5-tools
+      - keyring
+      - anaconda.enterprise.server.sdk>=0.6.0
+      - anaconda.enterprise.server.contracts>=0.8.3
+      - anaconda.enterprise.server.common.sdk>=0.4.8
+      - anaconda.mlflow.tracking.sdk>=0.10.3
 
 downloads:
   MLFLOW_TRACKING_SERVER_DOWNLOAD_URL:
-    url: https://github.com/Anaconda-Platform/mlflow-tracking-server/archive/refs/tags/0.6.1.tar.gz
-    filename: assets/mlflow.tracking.server-0.6.1.tar.gz
+    url: https://github.com/Anaconda-Platform/mlflow-tracking-server/archive/refs/tags/0.6.2.tar.gz
+    filename: assets/mlflow.tracking.server-0.6.2.tar.gz
 
   MLFLOW_TRACKING_SERVER_PRUNING_SERVICE_DOWNLOAD_URL:
-    url: https://github.com/Anaconda-Platform/anaconda-mlflow-tracking-prune/archive/refs/tags/0.7.1.tar.gz
-    filename: assets/anaconda.mlflow.tracking.prune-0.7.1.tar.gz
+    url: https://github.com/Anaconda-Platform/anaconda-mlflow-tracking-prune/archive/refs/tags/0.7.2.tar.gz
+    filename: assets/anaconda.mlflow.tracking.prune-0.7.2.tar.gz
 
   MLFLOW_MODEL_SERVING_DOWNLOAD_URL:
-    url: https://github.com/Anaconda-Platform/mlflow-model-serving/archive/refs/tags/0.7.1.tar.gz
-    filename: assets/mlflow.model.serving-0.7.1.tar.gz
+    url: https://github.com/Anaconda-Platform/mlflow-model-serving/archive/refs/tags/0.7.2.tar.gz
+    filename: assets/mlflow.model.serving-0.7.2.tar.gz
