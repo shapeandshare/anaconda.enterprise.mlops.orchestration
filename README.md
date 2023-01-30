@@ -39,24 +39,20 @@ root
 * keyring
 * anaconda-project
 
-## Runtime Environment Setup
+## Environment Setup
 
 > anaconda-project prepare
 
-## Development Environment Setup
-
-> anaconda-project prepare --env-spec development
-
-## Anaconda Project Development Commands
+## Anaconda Project Commands
 
 These commands are used during develop for solution management.
 
-| Command          | Environment  | Description                                               |
-|------------------|--------------|:----------------------------------------------------------|
-| bash             | Development  | Enters a bash shell within the `development` environment. |
-| clean            | Development  | Cleanup temporary project files                           |
-| lint             | Development  | Perform code linting check                                |
-| lint:fix         | Development  | Perform automated code formatting                         |
+| Command          | Environment  | Description                                           |
+|------------------|--------------|:------------------------------------------------------|
+| bash             | Development  | Enters a bash shell within the `default` environment. |
+| clean            | Development  | Cleanup temporary project files                       |
+| lint             | Development  | Perform code linting check                            |
+| lint:fix         | Development  | Perform automated code formatting                     |
 
 ## Contributing
 
