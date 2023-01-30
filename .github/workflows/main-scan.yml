@@ -35,6 +35,14 @@ jobs:
       run: |
         conda info
     - name: Anaconda Project Setup
+      env:
+        MLFLOW_TRACKING_ENTITY_TTL: FAKE-TRACKING-ENTITY-TTL
+        MLFLOW_TRACKING_GC_TTL: FAKE-TRACKING-GC-TTL
+        MLFLOW_ARTIFACTS_DESTINATION: FAKE-ARTIFACTS-DESTINATION
+        MLFLOW_BACKEND_STORE_URI: FAKE-BACKEND-STORE-URI
+        AE_AUTH: FAKE-AUTH
+        AE_USERNAME: FAKE-USERNAME
+        AE_HOSTNAME: FAKE-HOST
       run: |
         anaconda-project prepare --env-spec default --mode development_defaults
     - name: Linting
