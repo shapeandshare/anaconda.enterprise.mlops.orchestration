@@ -43,7 +43,7 @@ jobs:
         conda info
     - name: Anaconda Project Setup
       run: |
-        anaconda-project prepare --env-spec default
+        anaconda-project prepare --env-spec default --mode development_defaults
     - name: Linting
       run: |
         anaconda-project run lint
