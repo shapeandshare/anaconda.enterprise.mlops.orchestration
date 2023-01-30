@@ -3,17 +3,17 @@ description: Anaconda Enterprise MLOps Toolbox
 
 variables:
   # Anaconda Enterprise Configuration
-#  AE_HOSTNAME:
-#  AE_USERNAME:
-#  AE_PASSWORD:
+  AE_HOSTNAME:
+  AE_USERNAME:
+  AE_PASSWORD:
 
   # MLFlow Tracking Server Configuration
-#  MLFLOW_BACKEND_STORE_URI:
-#  MLFLOW_ARTIFACTS_DESTINATION:
-#  MLFLOW_TRACKING_GC_TTL:
+  MLFLOW_BACKEND_STORE_URI:
+  MLFLOW_ARTIFACTS_DESTINATION:
+  MLFLOW_TRACKING_GC_TTL:
 
   # MLFlow Tracking Server Resource Pruning Service
-#  MLFLOW_TRACKING_ENTITY_TTL:
+  MLFLOW_TRACKING_ENTITY_TTL:
 
 # If NOT deployed into the same account as the server then the following secrets MUST also be defined:
 #    MLFLOW_TRACKING_URI:
