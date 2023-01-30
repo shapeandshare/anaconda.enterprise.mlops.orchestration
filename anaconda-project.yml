@@ -3,17 +3,17 @@ description: Anaconda Enterprise MLOps Toolbox
 
 variables:
   # Anaconda Enterprise Configuration
-  AE_HOSTNAME:
-  AE_USERNAME:
+#  AE_HOSTNAME:
+#  AE_USERNAME:
 #  AE_PASSWORD:
 
   # MLFlow Tracking Server Configuration
-  MLFLOW_BACKEND_STORE_URI:
-  MLFLOW_ARTIFACTS_DESTINATION:
-  MLFLOW_TRACKING_GC_TTL:
+#  MLFLOW_BACKEND_STORE_URI:
+#  MLFLOW_ARTIFACTS_DESTINATION:
+#  MLFLOW_TRACKING_GC_TTL:
 
   # MLFlow Tracking Server Resource Pruning Service
-  MLFLOW_TRACKING_ENTITY_TTL:
+#  MLFLOW_TRACKING_ENTITY_TTL:
 
 # If NOT deployed into the same account as the server then the following secrets MUST also be defined:
 #    MLFLOW_TRACKING_URI:
@@ -40,44 +40,27 @@ commands:
     env_spec: default
     unix: bash
 
-  bash:dev:
-    env_spec: development
-    unix: bash
-
   clean:
-    env_spec: development
+    env_spec: default
     unix: |
       rm -rf .coverage htmlcov coverage.xml build docs/build
       jupyter nbconvert --clear-output --inplace notebooks/**/*.ipynb
 
   lint:
-    env_spec: development
+    env_spec: default
     unix: |
       pylint src
       isort --check --diff .
       black --line-length=120 --target-version=py310 --check --diff .
 
   lint:fix:
-    env_spec: development
+    env_spec: default
     unix: |
       isort .
       black --line-length=120 --target-version=py310 .
 
 env_specs:
   default:
-    description: Default Environment
-    packages:
-      - python=3.10
-      - mlflow=2.0.1
-      - ipykernel
-      - ae5-tools
-      - keyring
-      - anaconda.enterprise.server.sdk>=0.6.0
-      - anaconda.enterprise.server.contracts>=0.8.3
-      - anaconda.enterprise.server.common.sdk>=0.4.8
-      - anaconda.mlflow.tracking.sdk>=0.10.3
-
-  development:
     description: Default Environment
     packages:
       - python=3.10
