@@ -5,7 +5,7 @@ variables:
   # Anaconda Enterprise Configuration
   AE_HOSTNAME:
   AE_USERNAME:
-  AE_PASSWORD:
+  AE_AUTH:
 
   # MLFlow Tracking Server Configuration
   MLFLOW_BACKEND_STORE_URI:
