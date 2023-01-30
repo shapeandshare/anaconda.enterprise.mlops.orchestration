@@ -38,6 +38,10 @@ commands:
   #
 
   bash:
+    env_spec: default
+    unix: bash
+
+  bash:dev:
     env_spec: development
     unix: bash
 
@@ -97,12 +101,12 @@ env_specs:
 
 downloads:
   MLFLOW_TRACKING_SERVER_DOWNLOAD_URL:
-    url: https://github.com/Anaconda-Platform/mlflow-tracking-server/archive/refs/tags/0.6.2.tar.gz
-    filename: assets/mlflow.tracking.server-0.6.2.tar.gz
+    url: https://github.com/Anaconda-Platform/mlflow-tracking-server/archive/refs/tags/0.6.3.tar.gz
+    filename: assets/mlflow.tracking.server-0.6.3.tar.gz
 
   MLFLOW_TRACKING_SERVER_PRUNING_SERVICE_DOWNLOAD_URL:
-    url: https://github.com/Anaconda-Platform/anaconda-mlflow-tracking-prune/archive/refs/tags/0.7.2.tar.gz
-    filename: assets/anaconda.mlflow.tracking.prune-0.7.2.tar.gz
+    url: https://github.com/Anaconda-Platform/anaconda-mlflow-tracking-prune/archive/refs/tags/0.7.3.tar.gz
+    filename: assets/anaconda.mlflow.tracking.prune-0.7.3.tar.gz
 
   MLFLOW_MODEL_SERVING_DOWNLOAD_URL:
     url: https://github.com/Anaconda-Platform/mlflow-model-serving/archive/refs/tags/0.7.2.tar.gz
