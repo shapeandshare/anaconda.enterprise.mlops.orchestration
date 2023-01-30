@@ -5,7 +5,7 @@ variables:
   # Anaconda Enterprise Configuration
   AE_HOSTNAME:
   AE_USERNAME:
-  AE_PASSWORD:
+#  AE_PASSWORD:
 
   # MLFlow Tracking Server Configuration
   MLFLOW_BACKEND_STORE_URI:
@@ -21,7 +21,6 @@ variables:
 #    MLFLOW_TRACKING_TOKEN:
 
 channels:
-  - defaults
   - https://conda.anaconda.org/conda-forge/
   - https://conda.anaconda.org/joshburt/
   - https://conda.anaconda.org/ae5-admin/
