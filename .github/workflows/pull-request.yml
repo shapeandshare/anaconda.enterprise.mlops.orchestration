@@ -14,6 +14,16 @@ on:
 permissions:
   contents: read
 
+# Anaconda Project managed variables.  Sane defaults for pipeline execution.
+env:
+  MLFLOW_TRACKING_ENTITY_TTL: FAKE-TRACKING-ENTITY-TTL
+  MLFLOW_TRACKING_GC_TTL: FAKE-TRACKING-GC-TTL
+  MLFLOW_ARTIFACTS_DESTINATION: FAKE-ARTIFACTS-DESTINATION
+  MLFLOW_BACKEND_STORE_URI: FAKE-BACKEND-STORE-URI
+  AE_AUTH: FAKE-AUTH
+  AE_USERNAME: FAKE-USERNAME
+  AE_HOSTNAME: FAKE-HOST
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -42,19 +52,11 @@ jobs:
       run: |
         conda info
     - name: Anaconda Project Setup
-      env:
-        MLFLOW_TRACKING_ENTITY_TTL: FAKE-TRACKING-ENTITY-TTL
-        MLFLOW_TRACKING_GC_TTL: FAKE-TRACKING-GC-TTL
-        MLFLOW_ARTIFACTS_DESTINATION: FAKE-ARTIFACTS-DESTINATION
-        MLFLOW_BACKEND_STORE_URI: FAKE-BACKEND-STORE-URI
-        AE_AUTH: FAKE-AUTH
-        AE_USERNAME: FAKE-USERNAME
-        AE_HOSTNAME: FAKE-HOST
       run: |
         anaconda-project prepare --env-spec default --mode development_defaults
     - name: Linting
       run: |
-        anaconda-project run lint
+        anaconda-project run lint --mode development_defaults
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       env:
