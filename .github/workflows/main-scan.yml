@@ -49,7 +49,7 @@ jobs:
         anaconda-project prepare --env-spec default --mode development_defaults
     - name: Linting
       run: |
-        anaconda-project run lint --mode development_defaults
+        anaconda-project run --mode development_defaults lint
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       env:
