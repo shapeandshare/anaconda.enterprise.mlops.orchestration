@@ -27,7 +27,7 @@ def get_ae_client(options: Optional[ClientOptions] = None) -> AEClient:
         options_dict: dict = {
             "hostname": demand_env_var(name="AE_HOSTNAME"),
             "username": demand_env_var(name="AE_USERNAME"),
-            "password": demand_env_var(name="AE_PASSWORD"),
+            "password": demand_env_var(name="AE_AUTH"),
         }
         options: ClientOptions = ClientOptions.parse_obj(options_dict)
 
