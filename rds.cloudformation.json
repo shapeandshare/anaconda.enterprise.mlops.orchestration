@@ -1,0 +1,159 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "CloudFormationNameParameter": {
+            "Type": "String",
+            "Description": "CloudFormation name used for tagging resources"
+        },
+        "NetworkStackNameParameter": {
+            "Type": "String"
+        },
+        "AllocatedStorageParameter": {
+            "Type": "Number",
+            "Default": 20
+        },
+        "StorageTypeParameter": {
+            "Type": "String",
+            "Default": "standard"
+        },
+        "BackupRetentionPeriodParameter": {
+            "Type": "Number",
+            "Default": 7
+        },
+        "DBInstanceClassParameter": {
+            "Type": "String",
+            "Default": "db.t3.micro"
+        },
+        "DBInstanceIdentifierParameter": {
+            "Type": "String"
+        },
+        "DeletionProtectionParameter": {
+            "Type": "String",
+            "Default": "true"
+        },
+        "EngineParameter": {
+            "Type": "String",
+            "Default": "postgres"
+        },
+        "EngineVersionParameter": {
+            "Type": "String",
+            "Default": "14.6"
+        },
+        "PubliclyAccessibleParameter": {
+            "Type": "String",
+            "Default": "true"
+        },
+        "MasterUsernameParameter": {
+            "Type": "String",
+            "Default": "postgres"
+        },
+        "ManageMasterUserPasswordParameter": {
+            "Type": "String",
+            "Default": "true"
+        },
+        "PreferredBackupWindowParameter": {
+            "Type": "String",
+            "Default": "00:00-00:30"
+        }
+    },
+    "Resources": {
+        "DBSubnetGroup": {
+            "Type": "AWS::RDS::DBSubnetGroup",
+            "Properties": {
+                "DBSubnetGroupDescription": "RDS Subnet Group",
+                "SubnetIds": [
+                    {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetOneId"}},
+                    {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetTwoId"}},
+                    {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetThreeId"}},
+                    {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetFourId"}}
+                ],
+                "Tags": [
+                    {
+                        "Key": "CloudFormation",
+                        "Value": {
+                            "Ref": "CloudFormationNameParameter"
+                        }
+                    }
+                ]
+            }
+        },
+        "KMSKey": {
+            "Type": "AWS::KMS::Key",
+            "Properties": {
+                "Description": "RDS Master Password KMS key",
+                "EnableKeyRotation": true,
+                "KeyPolicy": {
+                    "Version": "2012-10-17",
+                    "Id": {
+                        "Ref": "AWS::StackName"
+                    },
+                    "Statement": [
+                        {
+                            "Sid": "Allow administration of the key",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": {
+                                    "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+                                }
+                            },
+                            "Action": [
+                                "kms:*"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                }
+            }
+        },
+        "RDS": {
+            "Type" : "AWS::RDS::DBInstance",
+            "Properties" : {
+                "AllocatedStorage": { "Ref":  "AllocatedStorageParameter" },
+                "StorageType": { "Ref":  "StorageTypeParameter" },
+                "BackupRetentionPeriod": { "Ref":  "BackupRetentionPeriodParameter" },
+                "DBSubnetGroupName": { "Ref":  "DBSubnetGroup" },
+                "DBInstanceIdentifier": { "Ref":  "DBInstanceIdentifierParameter" },
+                "DBInstanceClass": { "Ref":  "DBInstanceClassParameter" },
+                "DeletionProtection": { "Ref":  "DeletionProtectionParameter" },
+                "Engine": { "Ref":  "EngineParameter" },
+                "EngineVersion": { "Ref":  "EngineVersionParameter" },
+                "PubliclyAccessible": { "Ref":  "PubliclyAccessibleParameter" },
+                "ManageMasterUserPassword": { "Ref":  "ManageMasterUserPasswordParameter" },
+                "MasterUserSecret": {
+                    "KmsKeyId": {
+                        "Ref": "KMSKey"
+                    }
+                },
+                "MasterUsername": { "Ref":  "MasterUsernameParameter" },
+                "PreferredBackupWindow": { "Ref":  "PreferredBackupWindowParameter" },
+                "VPCSecurityGroups": [
+                    {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SecurityGroupId"}}
+                ],
+                "Tags": [
+                    {
+                        "Key": "CloudFormation",
+                        "Value": {
+                            "Ref": "CloudFormationNameParameter"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "DBSubnetGroupName": {
+            "Description": "DB Subnet Group Name",
+            "Value": {
+                "Ref": "DBSubnetGroup"
+            },
+            "Export": {
+                "Name" : {"Fn::Sub": "${AWS::StackName}-DBSubnetGroupName" }
+            }
+        },
+        "Secret": {
+            "Value": {
+                "Fn::GetAtt": "RDS.MasterUserSecret.SecretArn"
+            }
+        }
+    }
+}

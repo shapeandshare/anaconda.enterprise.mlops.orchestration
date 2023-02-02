@@ -1,0 +1,311 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "CloudFormationNameParameter": {
+            "Type": "String",
+            "Description": "CloudFormation name used for tagging resources"
+        },
+        "VpcCidrBlockParameter": {
+            "Type": "String",
+            "Default": "172.30.0.0/16"
+        },
+        "SubnetOneAvailabilityZoneParameter": {
+            "Type": "String",
+            "Default": "us-west-2a"
+        },
+        "SubnetOneCidrBlockParameter": {
+            "Type": "String",
+            "Default": "172.30.0.0/24"
+        },
+        "SubnetTwoAvailabilityZoneParameter": {
+            "Type": "String",
+            "Default": "us-west-2b"
+        },
+        "SubnetTwoCidrBlockParameter": {
+            "Type": "String",
+            "Default": "172.30.1.0/24"
+        },
+        "SubnetThreeAvailabilityZoneParameter": {
+            "Type": "String",
+            "Default": "us-west-2c"
+        },
+        "SubnetThreeCidrBlockParameter": {
+            "Type": "String",
+            "Default": "172.30.2.0/24"
+        },
+        "SubnetFourAvailabilityZoneParameter": {
+            "Type": "String",
+            "Default": "us-west-2d"
+        },
+        "SubnetFourCidrBlockParameter": {
+            "Type": "String",
+            "Default": "172.30.3.0/24"
+        }
+    },
+    "Resources": {
+        "VPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "VpcCidrBlockParameter"
+                },
+                "EnableDnsHostnames": "true",
+                "EnableDnsSupport": "true",
+                "Tags": [
+                    {
+                        "Key": "CloudFormation",
+                        "Value": {
+                            "Ref": "CloudFormationNameParameter"
+                        }
+                    }
+                ]
+            }
+        },
+        "SubnetOne": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "SubnetOneCidrBlockParameter"
+                },
+                "AvailabilityZone": {
+                    "Ref": "SubnetOneAvailabilityZoneParameter"
+                },
+                "VpcId": {
+                    "Fn::GetAtt": [
+                        "VPC",
+                        "VpcId"
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "CloudFormation",
+                        "Value": {
+                            "Ref": "CloudFormationNameParameter"
+                        }
+                    }
+                ]
+            }
+        },
+        "SubnetTwo": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "SubnetTwoCidrBlockParameter"
+                },
+                "AvailabilityZone": {
+                    "Ref": "SubnetTwoAvailabilityZoneParameter"
+                },
+                "VpcId": {
+                    "Fn::GetAtt": [
+                        "VPC",
+                        "VpcId"
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "CloudFormation",
+                        "Value": {
+                            "Ref": "CloudFormationNameParameter"
+                        }
+                    }
+                ]
+            }
+        },
+        "SubnetThree": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "SubnetThreeCidrBlockParameter"
+                },
+                "AvailabilityZone": {
+                    "Ref": "SubnetThreeAvailabilityZoneParameter"
+                },
+                "VpcId": {
+                    "Fn::GetAtt": [
+                        "VPC",
+                        "VpcId"
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "CloudFormation",
+                        "Value": {
+                            "Ref": "CloudFormationNameParameter"
+                        }
+                    }
+                ]
+            }
+        },
+        "SubnetFour": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "SubnetFourCidrBlockParameter"
+                },
+                "AvailabilityZone": {
+                    "Ref": "SubnetFourAvailabilityZoneParameter"
+                },
+                "VpcId": {
+                    "Fn::GetAtt": [
+                        "VPC",
+                        "VpcId"
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "CloudFormation",
+                        "Value": {
+                            "Ref": "CloudFormationNameParameter"
+                        }
+                    }
+                ]
+            }
+        },
+        "InternetGateway": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "CloudFormation",
+                        "Value": {
+                            "Ref": "CloudFormationNameParameter"
+                        }
+                    }
+                ]
+            }
+        },
+        "VPCGatewayAttachment": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "InternetGatewayId": {
+                    "Fn::GetAtt": [
+                        "InternetGateway",
+                        "InternetGatewayId"
+                    ]
+                },
+                "VpcId": {
+                    "Fn::GetAtt": [
+                        "VPC",
+                        "VpcId"
+                    ]
+                }
+            }
+        },
+        "SecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Responsible for ingress and egress configuration of the VPC",
+                "SecurityGroupEgress": [
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "IpProtocol": -1
+                    }
+                ],
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "206.189.175.217/32",
+                        "Description": "aip.anaconda.com PostgreSQL",
+                        "FromPort": 5432,
+                        "IpProtocol": "tcp",
+                        "ToPort": 5432
+                    },
+                    {
+                        "CidrIp": "8.29.230.88/32",
+                        "Description": "Local IP PostgreSQL (Temporary for testing)",
+                        "FromPort": 5432,
+                        "IpProtocol": "tcp",
+                        "ToPort": 5432
+                    }
+                ],
+                "VpcId": {
+                    "Fn::GetAtt": [
+                        "VPC",
+                        "VpcId"
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "CloudFormation",
+                        "Value": {
+                            "Ref": "CloudFormationNameParameter"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "VpcId": {
+            "Description": "The VPC ID",
+            "Value": {
+                "Fn::GetAtt": [
+                    "VPC",
+                    "VpcId"
+                ]
+            },
+            "Export": {
+                "Name" : {"Fn::Sub": "${AWS::StackName}-VpcId" }
+            }
+        },
+        "SubnetOneId": {
+            "Description": "Subnet One Id",
+            "Value": {
+                "Fn::GetAtt": [
+                    "SubnetOne",
+                    "SubnetId"
+                ]
+            },
+            "Export": {
+                "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetOneId" }
+            }
+        },
+        "SubnetTwoId": {
+            "Description": "Subnet Two Id",
+            "Value": {
+                "Fn::GetAtt": [
+                    "SubnetTwo",
+                    "SubnetId"
+                ]
+            },
+            "Export": {
+                "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetTwoId" }
+            }
+        },
+        "SubnetThreeId": {
+            "Description": "Subnet Three Id",
+            "Value": {
+                "Fn::GetAtt": [
+                    "SubnetThree",
+                    "SubnetId"
+                ]
+            },
+            "Export": {
+                "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetThreeId" }
+            }
+        },
+        "SubnetFourId": {
+            "Description": "Subnet Four Id",
+            "Value": {
+                "Fn::GetAtt": [
+                    "SubnetFour",
+                    "SubnetId"
+                ]
+            },
+            "Export": {
+                "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetFourId" }
+            }
+        },
+        "SecurityGroupId": {
+            "Description": "VPC Security Group Id",
+            "Value": {
+                "Fn::GetAtt": [
+                    "SecurityGroup",
+                    "GroupId"
+                ]
+            },
+            "Export": {
+                "Name" : {"Fn::Sub": "${AWS::StackName}-SecurityGroupId" }
+            }
+        }
+    }
+}
