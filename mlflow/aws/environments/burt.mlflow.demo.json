@@ -1,0 +1,39 @@
+{
+  "name": "burt.mlflow.demo",
+  "region": "us-west-02",
+  "anaconda": {
+    "enterprise": {
+      "options":  {
+        "hostname": "",
+        "username": "",
+        "password": ""
+      }
+    }
+  },
+  "config": {
+    "server": {
+      "template_path": "assets/mlflow.tracking.server-0.6.3.tar.gz",
+      "project_name": "burt.mlflow.demo.tracking.server",
+      "deployment_name": "burt.mlflow.demo.tracking.server",
+      "static_endpoint_name": "demo-mlflow-tracking"
+    },
+    "mlflow": [
+      {
+        "name": "MLFLOW_BACKEND_STORE_URI",
+        "value": ""
+      },
+      {
+        "name": "MLFLOW_ARTIFACTS_DESTINATION",
+        "value": "data/mlflow/demo/artifacts"
+      },
+      {
+        "name": "MLFLOW_TRACKING_GC_TTL",
+        "value": "0d0h10m0s"
+      },
+      {
+        "name": "MLFLOW_TRACKING_ENTITY_TTL",
+        "value": 30
+      }
+    ]
+  }
+}

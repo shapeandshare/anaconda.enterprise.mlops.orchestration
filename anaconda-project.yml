@@ -83,8 +83,8 @@ env_specs:
 
 downloads:
   MLFLOW_TRACKING_SERVER_DOWNLOAD_URL:
-    url: https://github.com/Anaconda-Platform/mlflow-tracking-server/archive/refs/tags/0.6.3.tar.gz
-    filename: assets/mlflow.tracking.server-0.6.3.tar.gz
+    url: https://github.com/Anaconda-Platform/mlflow-tracking-server/archive/refs/tags/0.6.5.tar.gz
+    filename: assets/mlflow.tracking.server-0.6.5.tar.gz
 
   MLFLOW_TRACKING_SERVER_PRUNING_SERVICE_DOWNLOAD_URL:
     url: https://github.com/Anaconda-Platform/anaconda-mlflow-tracking-prune/archive/refs/tags/0.7.3.tar.gz
