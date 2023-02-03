@@ -1,12 +1,22 @@
-from typing import Optional
+from typing import Optional, Union
 
-from anaconda.enterprise.server.contracts import BaseModel
+from anaconda.enterprise.server.contracts import (
+    BaseModel,
+    ProjectDeployResponse,
+    ProjectRevision,
+    ProjectUploadResponse,
+)
 from anaconda.enterprise.server.sdk import ClientOptions
 
 
 class ConfigProperty(BaseModel):
     name: str
     value: str
+
+
+class ExportProperty(BaseModel):
+    name: str
+    reference: str
 
 
 class CloudFormationConfig(BaseModel):
@@ -20,28 +30,37 @@ class AwsConfig(BaseModel):
     cloudformation: list[CloudFormationConfig]
 
 
+class AEProjectConfigBase(BaseModel):
+    index: int
+    template_path: str
+    project_name: str
+    exports: list[ExportProperty] = []
+
+
+class AEProjectConfig(AEProjectConfigBase):
+    deployment_name: str
+    static_endpoint_name: str
+
+
 class AnacondaEnterpriseServerConfig(BaseModel):
     options: ClientOptions
+    secrets: list[ConfigProperty]
+    collection: list[Union[AEProjectConfig, AEProjectConfigBase]]
 
 
 class AnacondaConfig(BaseModel):
     enterprise: AnacondaEnterpriseServerConfig
 
 
-class MLFlowTrackingServerAEConfig(BaseModel):
-    template_path: str
-    project_name: str
-    deployment_name: str
-    static_endpoint_name: str
-
-
-class MLFlowConfig(BaseModel):
-    server: MLFlowTrackingServerAEConfig
-    mlflow: list[ConfigProperty]
-
-
 class Manifest(BaseModel):
     name: str
     aws: Optional[AwsConfig] = None
     anaconda: AnacondaConfig
-    config: MLFlowConfig
+
+
+class ProjectLog(BaseModel):
+    upload: Optional[ProjectUploadResponse] = None
+    revisions: list[ProjectRevision] = []
+    deploy: Optional[ProjectDeployResponse] = None
+    access_token: Optional[str] = None
+    service_endpoint: Optional[str] = None

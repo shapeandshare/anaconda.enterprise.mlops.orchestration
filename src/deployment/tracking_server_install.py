@@ -1,5 +1,6 @@
 import time
 from pathlib import Path
+from typing import Optional, Union
 
 from anaconda.enterprise.server.contracts import (
     BaseModel,
@@ -10,19 +11,19 @@ from anaconda.enterprise.server.contracts import (
 from anaconda.enterprise.server.sdk import AEClient
 
 from ..utils import get_ae_client
-from .dto.manifest import Manifest
+from .dto.manifest import AEProjectConfig, AEProjectConfigBase, ConfigProperty, Manifest, ProjectLog
 
 
 class MLFlowInstaller(BaseModel):
     manifest: Manifest
     ae_client: AEClient
 
-    def set_initial_ae_secrets(self) -> None:
+    def set_secrets(self, secrets: list[ConfigProperty]) -> None:
         # Define our secrets
 
         # Remove possibly pre-existing configurations
-        for mlflow_property in self.manifest.config.mlflow:
-            key: str = mlflow_property.name
+        for secret in secrets:
+            key: str = secret.name
             try:
                 self.ae_client.secret_delete(key=key)
             except Exception as error:
@@ -30,34 +31,17 @@ class MLFlowInstaller(BaseModel):
                 print(error)
 
             # [re]create the secrets using the latest values.
-            value: str = mlflow_property.value
+            value: str = secret.value
 
             print(f"{key}:{value}")
             self.ae_client.secret_put(key=key, value=value)
 
-    def set_final_ae_secrets(self, service_endpoint: str, access_token: str) -> None:
-        # Define our secrets
-        secrets: dict[str, str] = {
-            "MLFLOW_TRACKING_URI": service_endpoint,
-            "MLFLOW_REGISTRY_URI": service_endpoint,
-            "MLFLOW_TRACKING_TOKEN": access_token,
-        }
-
-        print("The below values MUST bew provided to clients who wish to access the server and it's API.")
-        print(
-            "Please note that since this is a private deployment that a new token MUST be provided each time the server is restarted."
-        )
-
-        # [Re]create the secrets using the latest values.
-        for key, value in secrets.items():
-            print(f"{key}:{value}")
-            self.ae_client.secret_delete(key=key)
-            self.ae_client.secret_put(key=key, value=value)
-
-    def upload_project(self) -> tuple[ProjectUploadResponse, list[ProjectRevision]]:
+    def upload_project(
+        self, project_archive_path: str, project_name: str
+    ) -> tuple[ProjectUploadResponse, list[ProjectRevision]]:
         upload_response: ProjectUploadResponse = self.ae_client.project_upload(
-            project_archive_path=Path(self.manifest.config.server.template_path).resolve().as_posix(),
-            name=self.manifest.config.server.project_name,
+            project_archive_path=Path(project_archive_path).resolve().as_posix(),
+            name=project_name,
         )
 
         # Ensure the upload creation process has completed.
@@ -78,26 +62,68 @@ class MLFlowInstaller(BaseModel):
 
         return upload_response, project_revisions
 
-    def create_deployment(self, project_id: str, revision_id: str) -> ProjectDeployResponse:
+    def create_deployment(self, project: AEProjectConfig, project_id: str, revision_id: str) -> ProjectDeployResponse:
         deploy_params: dict = {
             "project_id": project_id,
-            "deployment_name": self.manifest.config.server.deployment_name,
+            "deployment_name": project.deployment_name,
             "revision_id": revision_id,
             "command": "TrackingServer",
-            "static_endpoint": self.manifest.config.server.static_endpoint_name,
+            "static_endpoint": project.static_endpoint_name,
         }
         return self.ae_client.project_deploy(**deploy_params)
 
-    def deploy(self):
-        self.set_initial_ae_secrets()
-        project_upload_response, project_revisions = self.upload_project()
-        project_deploy_response: ProjectDeployResponse = self.create_deployment(
-            project_id=project_upload_response.id, revision_id=project_revisions[0].id
+    @staticmethod
+    def get_value_from_reference(reference: str, log: ProjectLog) -> Optional[str]:
+        # TODO: Make this leverage the reference as a namespace so this works generically..
+        if reference == "log.service_endpoint":
+            return log.service_endpoint
+        if reference == "log.access_token":
+            return log.access_token
+
+    def deploy(self) -> list[ProjectLog]:
+        # Set Pre-Install Configuration Parameters
+        self.set_secrets(secrets=self.manifest.anaconda.enterprise.secrets)
+
+        sorted_collection: list[Union[AEProjectConfig, AEProjectConfigBase]] = sorted(
+            self.manifest.anaconda.enterprise.collection, key=lambda x: x.index
         )
 
-        access_token: str = self.ae_client.deployment_token_get(deployment_id=project_deploy_response.id)
-        service_endpoint: str = project_deploy_response.url
-        self.set_final_ae_secrets(service_endpoint=service_endpoint, access_token=access_token)
+        collection_log: list[ProjectLog] = []
+        for project in sorted_collection:
+            project_log: ProjectLog = ProjectLog()
+            project_upload_response, project_revisions = self.upload_project(
+                project_archive_path=project.template_path,
+                project_name=project.project_name,
+            )
+            project_log.upload = project_upload_response
+            project_log.revisions = project_revisions
+
+            if hasattr(project, "deployment_name") and project.deployment_name is not None:
+                # Create Deployment
+                project_deploy_response: ProjectDeployResponse = self.create_deployment(
+                    project=project, project_id=project_upload_response.id, revision_id=project_revisions[0].id
+                )
+
+                # Retrieve Runtime Configuration Of Deployment
+                access_token: str = self.ae_client.deployment_token_get(deployment_id=project_deploy_response.id)
+                service_endpoint: str = project_deploy_response.url
+
+                project_log.deploy = project_deploy_response
+                project_log.access_token = access_token
+                project_log.service_endpoint = service_endpoint
+
+                # Export Values
+                if len(project.exports) > 0:
+                    secrets: list[ConfigProperty] = []
+                    for export in project.exports:
+                        new_config: ConfigProperty = ConfigProperty(
+                            name=export.name,
+                            value=MLFlowInstaller.get_value_from_reference(reference=export.reference, log=project_log),
+                        )
+                        secrets.append(new_config)
+                    self.set_secrets(secrets=secrets)
+            collection_log.append(project_log)
+        return collection_log
 
         # job_creation_command: str = f"ae5 job create --command 'GarbageCollection' --schedule '*/10 * * * *' --name 'Scheduled {SERVER_PROJECT_NAME} Garbage Collection' '{SERVER_PROJECT_NAME}'"
 
@@ -114,4 +140,5 @@ if __name__ == "__main__":
     installer: MLFlowInstaller = MLFlowInstaller(manifest=manifest, ae_client=ae_client)
 
     # Install the application
-    installer.deploy()
+    log: list[ProjectLog] = installer.deploy()
+    print(log)
