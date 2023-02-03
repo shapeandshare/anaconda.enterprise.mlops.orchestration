@@ -1,0 +1,36 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "CloudFormationNameParameter": {
+            "Type": "String",
+            "Description": "CloudFormation name used for tagging resources"
+        }
+    },
+    "Resources": {
+        "MLFlowArtifactS3Bucket": {
+            "Type" : "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain",
+            "Properties" : {
+                "PublicAccessBlockConfiguration" : {
+                    "BlockPublicAcls" : "true",
+                    "BlockPublicPolicy" : "true",
+                    "IgnorePublicAcls" : "true",
+                    "RestrictPublicBuckets" : "true"
+                },
+                "Tags": [
+                    {
+                        "Key": "CloudFormation",
+                        "Value": {
+                            "Ref": "CloudFormationNameParameter"
+                        }
+                    }
+                ],
+                "VersioningConfiguration" : {
+                    "Status" : "Enabled"
+                }
+            }
+        }
+    },
+    "Outputs": {
+    }
+}

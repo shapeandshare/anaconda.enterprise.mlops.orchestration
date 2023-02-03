@@ -208,13 +208,6 @@
                         "FromPort": 5432,
                         "IpProtocol": "tcp",
                         "ToPort": 5432
-                    },
-                    {
-                        "CidrIp": "8.29.230.88/32",
-                        "Description": "Local IP PostgreSQL (Temporary for testing)",
-                        "FromPort": 5432,
-                        "IpProtocol": "tcp",
-                        "ToPort": 5432
                     }
                 ],
                 "VpcId": {

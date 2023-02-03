@@ -1,0 +1,30 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "CloudFormationNameParameter": {
+            "Type": "String",
+            "Description": "CloudFormation name used for tagging resources"
+        }
+    },
+    "Resources": {
+      "MLFlowServiceAccount": {
+        "Type" : "AWS::IAM::User",
+        "Properties" : {
+            "Groups" : [ ],
+            "Policies" : [ ],
+            "Tags": [
+                    {
+                        "Key": "CloudFormation",
+                        "Value": {
+                            "Ref": "CloudFormationNameParameter"
+                        }
+                    }
+            ],
+            "UserName" : {"Fn::Sub": "${AWS::StackName}-${AWS::Region}-MLFlowServiceAccount" }
+          }
+      }
+    },
+    "Outputs": {
+
+    }
+}
