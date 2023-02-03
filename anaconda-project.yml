@@ -7,6 +7,11 @@ variables:
   AE_USERNAME:
   AE_AUTH:
 
+  # Uncomment and define if deploying resources to AWS
+#  AWS_ACCESS_KEY_ID:
+#  AWS_SECRET_ACCESS_KEY:
+#  AWS_SESSION_TOKEN:
+
   # MLFlow Tracking Server Configuration
   MLFLOW_BACKEND_STORE_URI:
   MLFLOW_ARTIFACTS_DESTINATION:
@@ -80,6 +85,9 @@ env_specs:
       - anaconda.enterprise.server.contracts>=0.8.3
       - anaconda.enterprise.server.common.sdk>=0.4.8
       - anaconda.mlflow.tracking.sdk>=0.10.3
+
+# To Support AWS Deployments
+#      - boto3
 
 downloads:
   MLFLOW_TRACKING_SERVER_DOWNLOAD_URL:

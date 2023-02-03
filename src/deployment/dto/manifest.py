@@ -1,5 +1,23 @@
+from typing import Optional
+
 from anaconda.enterprise.server.contracts import BaseModel
 from anaconda.enterprise.server.sdk import ClientOptions
+
+
+class ConfigProperty(BaseModel):
+    name: str
+    value: str
+
+
+class CloudFormationConfig(BaseModel):
+    index: int
+    file: str
+    parameters: list[ConfigProperty]
+
+
+class AwsConfig(BaseModel):
+    region: str
+    cloudformation: list[CloudFormationConfig]
 
 
 class AnacondaEnterpriseServerConfig(BaseModel):
@@ -17,11 +35,6 @@ class MLFlowTrackingServerAEConfig(BaseModel):
     static_endpoint_name: str
 
 
-class ConfigProperty(BaseModel):
-    name: str
-    value: str
-
-
 class MLFlowConfig(BaseModel):
     server: MLFlowTrackingServerAEConfig
     mlflow: list[ConfigProperty]
@@ -29,6 +42,6 @@ class MLFlowConfig(BaseModel):
 
 class Manifest(BaseModel):
     name: str
-    region: str
+    aws: Optional[AwsConfig] = None
     anaconda: AnacondaConfig
     config: MLFlowConfig
