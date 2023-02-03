@@ -14,7 +14,7 @@ from ..utils import get_ae_client
 from .dto.manifest import AEProjectConfig, AEProjectConfigBase, ConfigProperty, Manifest, ProjectLog
 
 
-class MLFlowInstaller(BaseModel):
+class DeploymentService(BaseModel):
     manifest: Manifest
     ae_client: AEClient
 
@@ -118,7 +118,9 @@ class MLFlowInstaller(BaseModel):
                     for export in project.exports:
                         new_config: ConfigProperty = ConfigProperty(
                             name=export.name,
-                            value=MLFlowInstaller.get_value_from_reference(reference=export.reference, log=project_log),
+                            value=DeploymentService.get_value_from_reference(
+                                reference=export.reference, log=project_log
+                            ),
                         )
                         secrets.append(new_config)
                     self.set_secrets(secrets=secrets)
@@ -137,8 +139,8 @@ if __name__ == "__main__":
     ae_client: AEClient = get_ae_client(options=manifest.anaconda.enterprise.options)
 
     # Create installer
-    installer: MLFlowInstaller = MLFlowInstaller(manifest=manifest, ae_client=ae_client)
+    deployment_service: DeploymentService = DeploymentService(manifest=manifest, ae_client=ae_client)
 
     # Install the application
-    log: list[ProjectLog] = installer.deploy()
+    log: list[ProjectLog] = deployment_service.deploy()
     print(log)
