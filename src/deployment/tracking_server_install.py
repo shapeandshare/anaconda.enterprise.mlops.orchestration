@@ -1,3 +1,4 @@
+import json
 import time
 from pathlib import Path
 from typing import Optional, Union
@@ -80,24 +81,48 @@ class DeploymentService(BaseModel):
         if reference == "log.access_token":
             return log.access_token
 
+    def export(
+        self, project: Union[AEProjectConfig, AEProjectConfigBase], project_log: ProjectLog
+    ) -> list[ConfigProperty]:
+        secrets: list[ConfigProperty] = []
+
+        # Export Values
+        if len(project.exports) > 0:
+            for export in project.exports:
+                new_config: ConfigProperty = ConfigProperty(
+                    name=export.name,
+                    value=DeploymentService.get_value_from_reference(reference=export.reference, log=project_log),
+                )
+                secrets.append(new_config)
+            self.set_secrets(secrets=secrets)
+
+        return secrets
+
     def deploy(self) -> list[ProjectLog]:
         # Set Pre-Install Configuration Parameters
         self.set_secrets(secrets=self.manifest.anaconda.enterprise.secrets)
 
+        # Sort for dependency order
         sorted_collection: list[Union[AEProjectConfig, AEProjectConfigBase]] = sorted(
             self.manifest.anaconda.enterprise.collection, key=lambda x: x.index
         )
 
+        # Process the collection
         collection_log: list[ProjectLog] = []
         for project in sorted_collection:
+            # For each project in order ..
             project_log: ProjectLog = ProjectLog()
+
+            # Upload the project
             project_upload_response, project_revisions = self.upload_project(
                 project_archive_path=project.template_path,
                 project_name=project.project_name,
             )
+            # Record the results
             project_log.upload = project_upload_response
             project_log.revisions = project_revisions
-
+            # TODO: We can have multiple deployments, add multi-deployment support
+            # If we need to create a deployment, then continue..
             if hasattr(project, "deployment_name") and project.deployment_name is not None:
                 # Create Deployment
                 project_deploy_response: ProjectDeployResponse = self.create_deployment(
@@ -108,22 +133,14 @@ class DeploymentService(BaseModel):
                 access_token: str = self.ae_client.deployment_token_get(deployment_id=project_deploy_response.id)
                 service_endpoint: str = project_deploy_response.url
 
+                # Record the results
                 project_log.deploy = project_deploy_response
                 project_log.access_token = access_token
                 project_log.service_endpoint = service_endpoint
 
-                # Export Values
-                if len(project.exports) > 0:
-                    secrets: list[ConfigProperty] = []
-                    for export in project.exports:
-                        new_config: ConfigProperty = ConfigProperty(
-                            name=export.name,
-                            value=DeploymentService.get_value_from_reference(
-                                reference=export.reference, log=project_log
-                            ),
-                        )
-                        secrets.append(new_config)
-                    self.set_secrets(secrets=secrets)
+                new_exports: list[ConfigProperty] = self.export(project=project, project_log=project_log)
+                project_log.exports += new_exports
+
             collection_log.append(project_log)
         return collection_log
 
@@ -142,5 +159,5 @@ if __name__ == "__main__":
     deployment_service: DeploymentService = DeploymentService(manifest=manifest, ae_client=ae_client)
 
     # Install the application
-    log: list[ProjectLog] = deployment_service.deploy()
-    print(log)
+    logs: list[ProjectLog] = deployment_service.deploy()
+    print(logs)

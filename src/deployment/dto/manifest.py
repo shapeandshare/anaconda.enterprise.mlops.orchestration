@@ -64,3 +64,4 @@ class ProjectLog(BaseModel):
     deploy: Optional[ProjectDeployResponse] = None
     access_token: Optional[str] = None
     service_endpoint: Optional[str] = None
+    exports: list[ConfigProperty] = []
