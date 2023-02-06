@@ -12,7 +12,14 @@ from anaconda.enterprise.server.contracts import (
 from anaconda.enterprise.server.sdk import AEClient
 
 from ..utils import get_ae_client
-from .dto.manifest import AEProjectConfig, AEProjectConfigBase, ConfigProperty, Manifest, ProjectLog
+from .dto.manifest import (
+    AEProjectConfig,
+    ConfigProperty,
+    DeploymentConfig,
+    Manifest,
+    ProjectDeploymentDetail,
+    ProjectLog,
+)
 
 
 class DeploymentService(BaseModel):
@@ -62,27 +69,27 @@ class DeploymentService(BaseModel):
 
         return upload_response, project_revisions
 
-    def create_deployment(self, project: AEProjectConfig, project_id: str, revision_id: str) -> ProjectDeployResponse:
+    def create_deployment(
+        self, project_id: str, revision_id: str, deployment: DeploymentConfig
+    ) -> ProjectDeployResponse:
         deploy_params: dict = {
             "project_id": project_id,
-            "deployment_name": project.deployment_name,
             "revision_id": revision_id,
-            "command": "TrackingServer",
-            "static_endpoint": project.static_endpoint_name,
+            "deployment_name": deployment.name,
+            "command": deployment.command,
+            "static_endpoint": deployment.endpoint,
         }
         return self.ae_client.project_deploy(**deploy_params)
 
     @staticmethod
     def get_value_from_reference(reference: str, log: ProjectLog) -> Optional[str]:
         # TODO: Make this leverage the reference as a namespace so this works generically..
-        if reference == "log.service_endpoint":
-            return log.service_endpoint
-        if reference == "log.access_token":
-            return log.access_token
+        if reference == "log.deployments[0].service_endpoint":
+            return log.deployments[0].service_endpoint
+        if reference == "log.deployments[0].access_token":
+            return log.deployments[0].access_token
 
-    def export(
-        self, project: Union[AEProjectConfig, AEProjectConfigBase], project_log: ProjectLog
-    ) -> list[ConfigProperty]:
+    def export(self, project: AEProjectConfig, project_log: ProjectLog) -> list[ConfigProperty]:
         secrets: list[ConfigProperty] = []
 
         # Export Values
@@ -101,7 +108,7 @@ class DeploymentService(BaseModel):
         self.set_secrets(secrets=manifest.anaconda.enterprise.secrets)
 
         # Sort for dependency order
-        sorted_collection: list[Union[AEProjectConfig, AEProjectConfigBase]] = sorted(
+        sorted_collection: list[AEProjectConfig] = sorted(
             manifest.anaconda.enterprise.collection, key=lambda x: x.index
         )
 
@@ -121,12 +128,10 @@ class DeploymentService(BaseModel):
             project_log.revisions = project_revisions
 
             # Process defined Deployments
-            # TODO: We can have multiple deployments, add multi-deployment support
-            # If we need to create a deployment, then continue..
-            if hasattr(project, "deployment_name") and project.deployment_name is not None:
+            for deployment in project.deployments:
                 # Create Deployment
                 project_deploy_response: ProjectDeployResponse = self.create_deployment(
-                    project=project, project_id=project_upload_response.id, revision_id=project_revisions[0].id
+                    project_id=project_upload_response.id, revision_id=project_revisions[0].id, deployment=deployment
                 )
 
                 # Retrieve Runtime Configuration Of Deployment
@@ -134,9 +139,10 @@ class DeploymentService(BaseModel):
                 service_endpoint: str = project_deploy_response.url
 
                 # Record the results
-                project_log.deploy = project_deploy_response
-                project_log.access_token = access_token
-                project_log.service_endpoint = service_endpoint
+                details: ProjectDeploymentDetail = ProjectDeploymentDetail(
+                    response=project_deploy_response, access_token=access_token, service_endpoint=service_endpoint
+                )
+                project_log.deployments.append(details)
 
             # Export Generated Values
             new_exports: list[ConfigProperty] = self.export(project=project, project_log=project_log)
@@ -158,8 +164,6 @@ class DeploymentService(BaseModel):
 
             collection_log.append(project_log)
         return collection_log
-
-        # job_creation_command: str = f"ae5 job create --command 'GarbageCollection' --schedule '*/10 * * * *' --name 'Scheduled {SERVER_PROJECT_NAME} Garbage Collection' '{SERVER_PROJECT_NAME}'"
 
 
 if __name__ == "__main__":

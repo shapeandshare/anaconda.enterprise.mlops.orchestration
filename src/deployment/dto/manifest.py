@@ -1,6 +1,7 @@
 from typing import Optional, Union
 
 from anaconda.enterprise.server.contracts import (
+    AERecordProjectResourceProfileType,
     BaseModel,
     JobCreateResponse,
     ProjectDeployResponse,
@@ -37,26 +38,29 @@ class JobConfig(BaseModel):
     schedule: str
     autorun: bool = False
     variables: dict[str, str] = {}
-    resource_profile: Optional[str] = None
+    resource_profile: Optional[Union[AERecordProjectResourceProfileType, str]] = None
 
 
-class AEProjectConfigBase(BaseModel):
+class DeploymentConfig(BaseModel):
+    name: str
+    command: str
+    endpoint: Optional[str] = None
+    resource_profile: Optional[Union[AERecordProjectResourceProfileType, str]] = None
+
+
+class AEProjectConfig(BaseModel):
     index: int
     template_path: str
     project_name: str
+    deployments: list[DeploymentConfig] = []
     exports: list[ExportProperty] = []
     jobs: list[JobConfig] = []
-
-
-class AEProjectConfig(AEProjectConfigBase):
-    deployment_name: str
-    static_endpoint_name: str
 
 
 class AnacondaEnterpriseServerConfig(BaseModel):
     options: ClientOptions
     secrets: list[ConfigProperty]
-    collection: list[Union[AEProjectConfig, AEProjectConfigBase]]
+    collection: list[AEProjectConfig]
 
 
 class AnacondaConfig(BaseModel):
@@ -69,11 +73,15 @@ class Manifest(BaseModel):
     anaconda: AnacondaConfig
 
 
+class ProjectDeploymentDetail(BaseModel):
+    response: ProjectDeployResponse
+    access_token: Optional[str] = None
+    service_endpoint: Optional[str] = None
+
+
 class ProjectLog(BaseModel):
     upload: Optional[ProjectUploadResponse] = None
     revisions: list[ProjectRevision] = []
-    deploy: Optional[ProjectDeployResponse] = None
-    access_token: Optional[str] = None
-    service_endpoint: Optional[str] = None
+    deployments: list[ProjectDeploymentDetail] = []
     exports: list[ConfigProperty] = []
     jobs: list[JobCreateResponse] = []
