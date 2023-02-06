@@ -81,8 +81,8 @@ env_specs:
       - myst-parser
       - ae5-tools
       - keyring
-      - anaconda.enterprise.server.sdk>=0.6.0
-      - anaconda.enterprise.server.contracts>=0.8.3
+      - anaconda.enterprise.server.sdk>=0.7.0
+      - anaconda.enterprise.server.contracts>=0.9.1
       - anaconda.enterprise.server.common.sdk>=0.4.8
       - anaconda.mlflow.tracking.sdk>=0.10.3
 

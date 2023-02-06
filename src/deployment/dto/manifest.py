@@ -2,6 +2,7 @@ from typing import Optional, Union
 
 from anaconda.enterprise.server.contracts import (
     BaseModel,
+    JobCreateResponse,
     ProjectDeployResponse,
     ProjectRevision,
     ProjectUploadResponse,
@@ -30,11 +31,21 @@ class AwsConfig(BaseModel):
     cloudformation: list[CloudFormationConfig]
 
 
+class JobConfig(BaseModel):
+    name: str
+    command: str
+    schedule: str
+    autorun: bool = False
+    variables: dict[str, str] = {}
+    resource_profile: Optional[str] = None
+
+
 class AEProjectConfigBase(BaseModel):
     index: int
     template_path: str
     project_name: str
     exports: list[ExportProperty] = []
+    jobs: list[JobConfig] = []
 
 
 class AEProjectConfig(AEProjectConfigBase):
@@ -65,3 +76,4 @@ class ProjectLog(BaseModel):
     access_token: Optional[str] = None
     service_endpoint: Optional[str] = None
     exports: list[ConfigProperty] = []
+    jobs: list[JobCreateResponse] = []

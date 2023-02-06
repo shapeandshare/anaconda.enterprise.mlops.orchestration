@@ -1,10 +1,10 @@
-import json
 import time
 from pathlib import Path
 from typing import Optional, Union
 
 from anaconda.enterprise.server.contracts import (
     BaseModel,
+    JobCreateResponse,
     ProjectDeployResponse,
     ProjectRevision,
     ProjectUploadResponse,
@@ -16,7 +16,6 @@ from .dto.manifest import AEProjectConfig, AEProjectConfigBase, ConfigProperty, 
 
 
 class DeploymentService(BaseModel):
-    manifest: Manifest
     ae_client: AEClient
 
     def set_secrets(self, secrets: list[ConfigProperty]) -> None:
@@ -87,24 +86,23 @@ class DeploymentService(BaseModel):
         secrets: list[ConfigProperty] = []
 
         # Export Values
-        if len(project.exports) > 0:
-            for export in project.exports:
-                new_config: ConfigProperty = ConfigProperty(
-                    name=export.name,
-                    value=DeploymentService.get_value_from_reference(reference=export.reference, log=project_log),
-                )
-                secrets.append(new_config)
-            self.set_secrets(secrets=secrets)
+        for export in project.exports:
+            new_config: ConfigProperty = ConfigProperty(
+                name=export.name,
+                value=DeploymentService.get_value_from_reference(reference=export.reference, log=project_log),
+            )
+            secrets.append(new_config)
+        self.set_secrets(secrets=secrets)
 
         return secrets
 
-    def deploy(self) -> list[ProjectLog]:
+    def deploy(self, manifest: Manifest) -> list[ProjectLog]:
         # Set Pre-Install Configuration Parameters
-        self.set_secrets(secrets=self.manifest.anaconda.enterprise.secrets)
+        self.set_secrets(secrets=manifest.anaconda.enterprise.secrets)
 
         # Sort for dependency order
         sorted_collection: list[Union[AEProjectConfig, AEProjectConfigBase]] = sorted(
-            self.manifest.anaconda.enterprise.collection, key=lambda x: x.index
+            manifest.anaconda.enterprise.collection, key=lambda x: x.index
         )
 
         # Process the collection
@@ -121,6 +119,8 @@ class DeploymentService(BaseModel):
             # Record the results
             project_log.upload = project_upload_response
             project_log.revisions = project_revisions
+
+            # Process defined Deployments
             # TODO: We can have multiple deployments, add multi-deployment support
             # If we need to create a deployment, then continue..
             if hasattr(project, "deployment_name") and project.deployment_name is not None:
@@ -138,8 +138,23 @@ class DeploymentService(BaseModel):
                 project_log.access_token = access_token
                 project_log.service_endpoint = service_endpoint
 
-                new_exports: list[ConfigProperty] = self.export(project=project, project_log=project_log)
-                project_log.exports += new_exports
+            # Export Generated Values
+            new_exports: list[ConfigProperty] = self.export(project=project, project_log=project_log)
+            project_log.exports += new_exports
+
+            # Process defined Jobs
+            for job in project.jobs:
+                job_create_result: JobCreateResponse = self.ae_client.job_create(
+                    name=job.name,
+                    schedule=job.schedule,
+                    autorun=job.autorun,
+                    command=job.command,
+                    project_id=project_upload_response.id,
+                    revision_id=project_revisions[0].id,
+                    resource_profile=job.resource_profile,
+                    variables=job.variables,
+                )
+                project_log.jobs.append(job_create_result)
 
             collection_log.append(project_log)
         return collection_log
@@ -148,16 +163,16 @@ class DeploymentService(BaseModel):
 
 
 if __name__ == "__main__":
-    # Load configuration
-    manifest_path: str = "mlflow/aws/environments/burt.mlflow.demo.json"
-    manifest: Manifest = Manifest.parse_file(manifest_path)
+    # Load Configuration
+    manifest_path: str = "mlflow/aws/environments/burt.mlflow.dev.json"
+    collection_manifest: Manifest = Manifest.parse_file(manifest_path)
 
     # Generate AE Client
-    ae_client: AEClient = get_ae_client(options=manifest.anaconda.enterprise.options)
+    ae_client: AEClient = get_ae_client(options=collection_manifest.anaconda.enterprise.options)
 
-    # Create installer
-    deployment_service: DeploymentService = DeploymentService(manifest=manifest, ae_client=ae_client)
+    # Create Deployment Service
+    deployment_service: DeploymentService = DeploymentService(ae_client=ae_client)
 
     # Install the application
-    logs: list[ProjectLog] = deployment_service.deploy()
+    logs: list[ProjectLog] = deployment_service.deploy(manifest=collection_manifest)
     print(logs)
